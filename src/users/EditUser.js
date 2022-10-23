@@ -1,10 +1,11 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function EditUser() {
-
     let navigate = useNavigate();
+
+    const {id} = useParams()
 
     const [user, setUser] = useState({
         name: "",
@@ -18,11 +19,20 @@ export default function EditUser() {
         setUser({ ...user, [e.target.name]: e.target.value })
     };
 
+    useEffect(() => {
+        loadUser()
+    }, []);
+
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:8080/api/v1/app/user", user);
+        await axios.put(`http://localhost:8080/api/v1/app/user/${id}`, user);
         navigate("/");
     };
+
+    const loadUser = async ()=>{
+        const result = await axios.get(`http:/localhost:8080/api/v1/app/user/${id}`)
+        setUser(result.data)
+    }
 
     return <div className='container'>
         <div className="row">
